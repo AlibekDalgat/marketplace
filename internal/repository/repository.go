@@ -7,7 +7,7 @@ import (
 
 type Authorization interface {
 	CreateUser(login models.User) (models.User, error)
-	GetUser(login, password string) (models.User, error)
+	GetUser(login string) (models.User, error)
 }
 
 type Advertisement interface {
