@@ -6,8 +6,8 @@ import (
 )
 
 type User struct {
-	Login    string `json:"login" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Login    string `json:"login" db:"login" binding:"required"`
+	Password string `json:"password" db:"password_hash" binding:"required"`
 }
 
 func (u User) Validate() error {
