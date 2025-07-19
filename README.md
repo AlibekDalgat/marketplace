@@ -98,7 +98,7 @@ curl --location --request POST 'localhost:8000/auth/sign-in' \
     "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJNYXBDbGFpbXMiOnsiZXhwIjoxNzUyOTg2OTk4LCJpYXQiOjE3NTI5NDM3OTh9LCJsb2dpbiI6ImFsaWJlayJ9.hAaLZ7FJ5juQYxq5rYrLlbPRzc4FVHccxH2X7ybvhgU"
 }
 ```
-Полученный токен далее необходимо
+Полученный токен далее необходимо добавлять в хэдер запросов (токен на получение отображение ленты объявлений не обязателен)
 ### 3. POST /api/adverts/
 **Запрос:**
 ```
@@ -145,6 +145,33 @@ curl --location --request GET 'localhost:8000/api/adverts?sort=price&direction=a
             "price": 6,
             "owner": "alibek",
             "isOwner": true
+        }
+    ]
+}
+```
+
+
+**Запрос:**
+```
+curl --location --request GET 'localhost:8000/api/adverts?sort=price&direction=asc' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "title": "uyuy",
+    "text": "text",
+    "price": 6
+}'
+```
+**Тело ответа:**
+```
+{
+    "data": [
+        {
+            "title": "uyuy",
+            "text": "text",
+            "image": null,
+            "price": 6,
+            "owner": "alibek",
+            "isOwner": false
         }
     ]
 }
