@@ -12,26 +12,41 @@ const (
 	loginCtx            = "login"
 )
 
-func (h *Handler) userIdentity(c *gin.Context) {
-	header := c.GetHeader(authorizationHeader)
-	if header == "" {
-		newErrorResponse(c, http.StatusUnauthorized, "пустой хедер аутентификации")
-		return
-	}
+func (h *Handler) userIdentity(required bool) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		header := c.GetHeader(authorizationHeader)
+		if header == "" {
+			if required {
+				newErrorResponse(c, http.StatusUnauthorized, "пустой хедер аутентификации")
+				return
+			}
+			c.Next()
+			return
+		}
 
-	headerParts := strings.Split(header, " ")
-	if len(headerParts) != 2 {
-		newErrorResponse(c, http.StatusUnauthorized, "неправильный header")
-		return
-	}
+		headerParts := strings.Split(header, " ")
+		if len(headerParts) != 2 || headerParts[0] != "Bearer" {
+			if required {
+				newErrorResponse(c, http.StatusUnauthorized, "неправильный header")
+				return
+			}
+			c.Next()
+			return
+		}
 
-	login, err := h.services.Authorization.ParseToken(headerParts[1])
-	if err != nil {
-		newErrorResponse(c, http.StatusUnauthorized, err.Error())
-		return
-	}
+		login, err := h.services.Authorization.ParseToken(headerParts[1])
+		if err != nil {
+			if required {
+				newErrorResponse(c, http.StatusUnauthorized, err.Error())
+				return
+			}
+			c.Next()
+			return
+		}
 
-	c.Set(loginCtx, login)
+		c.Set(loginCtx, login)
+		c.Next()
+	}
 }
 
 func getUserLogin(c *gin.Context) (string, error) {
